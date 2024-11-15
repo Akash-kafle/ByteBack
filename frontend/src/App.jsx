@@ -6,6 +6,7 @@ import Dropoff from "./components/Dropoff";
 import Signup from "./components/Signup";
 import Tracking from "./components/Tracking";
 import Navbar from "./components/Navbar";
+import About from "./components/About";
 
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/sign-up" element={<Signup />}/>
           <Route path="/dropoff" element={<Dropoff />} />
           <Route path="tracking" element={<Tracking/>} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </div>
     </>
