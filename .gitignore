@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 .venv
+.vanv
 dist
 dist-ssr
 *.local

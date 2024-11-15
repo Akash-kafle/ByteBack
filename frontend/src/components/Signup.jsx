@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import DatePicker from "react-datepicker";
 
 const Signup = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
+    fullName: "",
     email: "",
     dob: null,
     password: "",
@@ -26,6 +27,14 @@ const Signup = () => {
     setFormData((prevData) => ({ ...prevData, dob: date }));
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -37,22 +46,22 @@ const Signup = () => {
     }
 
     try {
-      data = {
-      // Format date to 'YYYY-MM-DD'
-    }
-      const response = await axios.post("http://127.0.0.1:8000/signup",  {
-        username: `${formData.firstName} ${formData.lastName}`,
+      const payload = {
+        name: formData.fullName,
         email: formData.email,
+        DOB: formData.dob ? formData.dob.toISOString().split("T")[0] : null,
         password: formData.password,
-        DOB: formData.dob.toISOString().split("T")[0]
-      });
+      };
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/signup",
+        payload
+      );
 
       if (response.data.status) {
         setSuccessMessage(response.data.message);
         setFormData({
-          firstName: "",
-          middleName: "",
-          lastName: "",
+          fullName: "",
           email: "",
           dob: null,
           password: "",
@@ -66,9 +75,8 @@ const Signup = () => {
     }
   };
 
-
   return (
-    <div className="min-h-screen bg-gradient-to-r from-green-200 to-teal-200">
+    <div className="min-h-screen shadow-md rounded-2xl bg-gradient-to-r from-green-200 to-teal-200">
       <div className="p-6 max-w-7xl mx-auto">
         <form
           className="flex flex-col gap-6 max-w-sm mx-auto mt-[60px] p-6 rounded-x/60 backdrop-blur-md rounded-2xl bg-green-100"
@@ -83,41 +91,16 @@ const Signup = () => {
             <p className="text-green-500 text-sm">{successMessage}</p>
           )}
 
-          <div className="flex gap-6">
-            <div className="w-1/3">
-              <label className="text-sm text-gray-500">First</label>
-              <input
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg"
-                type="text"
-                required
-              />
-            </div>
-
-            <div className="w-1/3">
-              <label className="text-sm text-gray-500">Middle</label>
-              <input
-                name="middleName"
-                value={formData.middleName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg"
-                type="text"
-              />
-            </div>
-
-            <div className="w-1/3">
-              <label className="text-sm text-gray-500">Last</label>
-              <input
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg"
-                type="text"
-                required
-              />
-            </div>
+          <div>
+            <label className="text-sm text-gray-500">Full Name</label>
+            <input
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="w-full px-3 py-2 rounded-lg"
+              type="text"
+              required
+            />
           </div>
 
           <div>
@@ -148,26 +131,50 @@ const Signup = () => {
 
           <div>
             <label className="text-sm text-gray-500">Password</label>
-            <input
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg"
-              type="password"
-              required
-            />
+            <div className="relative">
+              <input
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded-lg"
+                type={showPassword ? "text" : "password"}
+                required
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+              >
+                <FontAwesomeIcon
+                  icon={showPassword ? faEyeSlash : faEye}
+                  className="text-lg"
+                />
+              </button>
+            </div>
           </div>
 
           <div>
             <label className="text-sm text-gray-500">Confirm Password</label>
-            <input
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg"
-              type="password"
-              required
-            />
+            <div className="relative">
+              <input
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded-lg"
+                type={showConfirmPassword ? "text" : "password"}
+                required
+              />
+              <button
+                type="button"
+                onClick={toggleConfirmPasswordVisibility}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+              >
+                <FontAwesomeIcon
+                  icon={showConfirmPassword ? faEyeSlash : faEye}
+                  className="text-lg"
+                />
+              </button>
+            </div>
           </div>
 
           <button className="bg-green-500 hover:bg-green-600 focus:outline-none py-3 px-6 rounded-lg border-none transition-all duration-300">

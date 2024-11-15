@@ -7,11 +7,20 @@ import {
   faPhone,
   faBars,
   faUser,
+  faSignOutAlt,
+  faGift, // Add the logout icon
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  // Function to handle logout
+  const handleLogout = () => {
+ 
+    console.log("Logging out...");
+  
+  };
 
   return (
     <nav className="bg-gradient-to-r from-green-600 to-teal-600 shadow-md">
@@ -33,12 +42,12 @@ const Navbar = () => {
           }`}
         >
           <NavLink
-           to="/"
+            to="/"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
             <FontAwesomeIcon icon={faHome} className="mr-2" />
             Home
-            </NavLink>
+          </NavLink>
           <NavLink
             to="/dropoff"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
@@ -53,13 +62,13 @@ const Navbar = () => {
             <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
             About
           </NavLink>
-          <a
-            href="/contact"
+          <NavLink
+            to="/redeem" 
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
-            <FontAwesomeIcon icon={faPhone} className="mr-2" />
-            Contact
-          </a>
+            <FontAwesomeIcon icon={faGift} className="mr-2" />
+            Redeem
+          </NavLink>
           <NavLink
             to="/profile"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
@@ -67,6 +76,15 @@ const Navbar = () => {
             <FontAwesomeIcon icon={faUser} className="mr-2" />
             Profile
           </NavLink>
+
+          {/* Logout Link */}
+          <button
+            onClick={handleLogout}
+            className="text-white text-lg hover:text-teal-200 transition-all duration-300"
+          >
+            <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+            Logout
+          </button>
         </div>
 
         {/* Mobile Menu Button */}
