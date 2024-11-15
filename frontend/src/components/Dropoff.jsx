@@ -259,7 +259,7 @@ const Dropoff = () => {
         {/* Map Container */}
         <div className="bg-white/60 backdrop-blur-md rounded-xl border border-white/20 p-4">
           <MapContainer
-            center={[27.6818, 85.3147]} // Centered on Doko Recyclers
+            center={[27.6818, 85.3147]} 
             zoom={13}
             scrollWheelZoom={true}
             className="h-[600px] w-full rounded-lg"
