@@ -47,4 +47,3 @@ overall_score = data['Normalized Impact Score'].mean()
 # Print the results
 print(data[['Element', 'Quantity (gm)', 'Normalized Impact Score']])
 print(f"Overall Environmental Impact Score: {overall_score:.2f}/10")
-print("Pushing")
