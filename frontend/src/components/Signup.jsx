@@ -40,7 +40,6 @@ const Signup = () => {
               <input
                 className="  w-full px-3 py-2 rounded-lg"
                 type="text"
-                required
               />
             </div>
 
