@@ -1,9 +1,9 @@
 import pandas as pd
 
 # Read the data
-data = pd.read_csv('E:\Code\HackFEST\e-waste\Python\smartPhone.csv')
+data = pd.read_csv('E:\\Code\\HackFEST\\e-waste\\Python\\smartPhone.csv')
 
-# Impact coefficients per gram(from manufacturing to production phase)
+# Impact coefficients per gram (from manufacturing to production phase)
 impact_factors = {
     'Aluminum': {'energy': 0.7, 'toxicity': 0.2, 'water': 0.5, 'carbon_emissions': 1.5},
     'Silicon': {'energy': 0.6, 'toxicity': 0.1, 'water': 0.4, 'carbon_emissions': 1.0},
@@ -26,4 +26,24 @@ impact_factors = {
     'Gallium': {'energy': 1.1, 'toxicity': 0.4, 'water': 0.8, 'carbon_emissions': 2.0}
 }
 
+# Calculate the environmental impact score
+def calculate_impact_score(row):
+    element = row['Element']
+    quantity = float(row['Quantity (gm)'])  # Convert quantity to float
+    if element in impact_factors:
+        factors = impact_factors[element]
+        impact_score = (factors['energy'] + factors['toxicity'] + factors['water'] + factors['carbon_emissions']) * quantity
+        return impact_score
+    return 0
 
+# Apply the calculation to each row
+data['Impact Score'] = data.apply(calculate_impact_score, axis=1)
+
+# Normalize the impact score to a scale of 1-10
+max_score = data['Impact Score'].max()
+data['Normalized Impact Score'] = (data['Impact Score'] / max_score) * 10
+overall_score = data['Normalized Impact Score'].mean()
+
+# Print the results
+print(data[['Element', 'Quantity (gm)', 'Normalized Impact Score']])
+print(f"Overall Environmental Impact Score: {overall_score:.2f}/10")
