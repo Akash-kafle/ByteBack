@@ -9,19 +9,19 @@ const Footer = () => {
             <div className="mb-6 md:mb-0">
               <a href="https://flowbite.com/" className="flex items-center">
                 <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
-                  Chop-Suey
+                  e-Waste Recycle
                 </span>
               </a>
             </div>
             <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
               <div>
                 <h2 className="mb-6 text-sm font-semibold uppercase text-white">
-                  Resources
+                  Our Community
                 </h2>
                 <ul className="text-white font-medium">
                   <li className="mb-4">
                     <a href="https://flowbite.com/" className="hover:underline">
-                      Flowbite
+                      Schedule PickUp
                     </a>
                   </li>
                   <li>
@@ -29,7 +29,7 @@ const Footer = () => {
                       href="https://tailwindcss.com/"
                       className="hover:underline"
                     >
-                      Tailwind CSS
+                      Our Partners
                     </a>
                   </li>
                 </ul>
@@ -81,7 +81,7 @@ const Footer = () => {
             <span className="text-sm text-white sm:text-center">
               © 2023{" "}
               <a href="https://flowbite.com/" className="hover:underline">
-                Flowbite™
+                E-Waste recycling™
               </a>
               . All Rights Reserved.
             </span>

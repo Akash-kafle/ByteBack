@@ -4,7 +4,7 @@ import CarouselTransition from "./Carousel";
 const Landing = () => {
   return (
     <>
-      {<CarouselTransition />}
+      <div className="">{<CarouselTransition />}</div>
       {<Footer />}
     </>
   );
