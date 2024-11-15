@@ -1,10 +1,9 @@
 import React from "react";
-import Navbar from "./components/Navbar";
 import { Route, Routes } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/dashboard";
 import Login from "./components/Login"
-import Signup from "./components/Signup";
 import Dropoff from "./components/Dropoff";
+import Signup from "./components/Signup";
 
 
 const App = () => {
