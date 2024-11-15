@@ -1,6 +1,7 @@
 import asyncpg
 import os
 from asyncpg import Connection
+import re
 
 async def open_connection():
     """Establish and return a connection to the database."""
@@ -16,13 +17,25 @@ async def open_connection():
 
         # Check if the 'UserLog' database exists
         exists = await conn.fetchval("SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'UserLog';")
-        
+
         
         if not exists:
             # Create the 'UserLog' database
             user = input("Enter user: ")
             password = input("Enter password: ")
-            await conn.execute("CREATE DATABASE \"UserLog\";")
+            dataname = input("Enter database name: ")
+
+
+            while True:
+                dataname = input("Enter database name: ")
+                # Validate and clean the input
+                if dataname.length > 2 and re.match(r"^[a-zA-Z0-9_]+$", dataname):
+                    # The name contains only valid characters (alphanumeric and underscores)
+                    await conn.execute(f'CREATE DATABASE "{dataname}";')
+                    break
+                else:
+                    print("Invalid database name. Use only letters, numbers, and underscores.")
+
             await conn.execute(
                 "CREATE USER {} WITH PASSWORD $1".format(user), password
             )
@@ -41,13 +54,15 @@ async def open_connection():
             conn = await asyncpg.connect(
                 user=user,
                 password=password,
-                database="UserLog",
+                database=dataname,
                 host='127.0.0.1',
                 port='5432'
             )
             
-            os.environ["POSTGRES_USER"] = user
-            os.environ["POSTGRES_PASS"] = password
+            # Append values to existing environment variables or create them if they don't exist
+            os.environ["POSTGRES_USER"] = f"{os.getenv('POSTGRES_USER', '')},{user}"
+            os.environ["POSTGRES_PASS"] = f"{os.getenv('POSTGRES_PASS', '')},{password}"
+            os.environ["POSTGRES_NAME"] = f"{os.getenv('POSTGRES_NAME', '')},{dataname}"
 
             # Get version to confirm connection
             version = await conn.fetchval("SELECT version();")

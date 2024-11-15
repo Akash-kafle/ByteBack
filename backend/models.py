@@ -1,31 +1,32 @@
 # this is models to be used in the server
 from pydantic import BaseModel
+from uuid import uuid4
+from typing import Optional
+
 
 
 #signup 
 class UserSignUpCred(BaseModel):
-    # id: str
     name: str
-    # username: str
     email: str
     password: str
     DOB: str
 
 #login
 class UserLoginCred(BaseModel):
-    username: str
+    email: str
     password: str
 
 #profile
 class UserProfile(BaseModel):
-    id: str
+    id: Optional[str] = str(uuid4())
     name: str
-    username: str
+    email: str
     DOB: str
     # Picture
 
 class UserLog(BaseModel):
-    username: str
+    email: str
     token: str
     created_at: str
     valid_to: str

@@ -1,7 +1,7 @@
 from typing import Union
 from backend.db import open_connection, close_connection
-from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token, get_username
-from blockchain import blockchain
+from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token
+from blockchain.blockchain import RecycleChain
 import bcrypt
 from fastapi import FastAPI, HTTPException, Depends
 import uuid
@@ -40,8 +40,8 @@ async def login(cred: UserLoginCred):
     conn = await open_connection()
     try:
         # Query to get user from the database
-        query = "SELECT id, password FROM users WHERE username = $1"
-        result = await conn.fetchrow(query, cred.username)
+        query = "SELECT id, password FROM users WHERE email = $1"
+        result = await conn.fetchrow(query, cred.email)
 
         if result:
             # Compare the stored hashed password with the input password
@@ -49,22 +49,19 @@ async def login(cred: UserLoginCred):
             user_id = result['id']
             if bcrypt.checkpw(cred.password.encode('utf-8'), stored_password_hash.encode('utf-8')):
                 # Generate JWT token for the user
-                token, valid_to = create_jwt_token(cred.username, SECRET_KEY=SECRET_KEY, ALGORITHM=ALGORITHM)
+                token, valid_to = create_jwt_token(cred.email, SECRET_KEY=SECRET_KEY, ALGORITHM=ALGORITHM)
                 # Log the successful login attempt
-                await log_login_attempt(conn, cred.username, success=True)
+                await log_login_attempt(conn, cred.email, success=True, token=token)
                 # Send the JWT and user ID to the frontend
                 return {"token": token, "user_id": user_id, "valid_to": valid_to.isoformat()}
             else:
                 # Log the failed login attempt
-                await log_login_attempt(conn, cred.username, success=False, error_message="Invalid password")
                 raise HTTPException(status_code=401, detail="Invalid password")
         else:
             # Log the failed login attempt
-            await log_login_attempt(conn, cred.username, success=False, error_message="User not found")
             raise HTTPException(status_code=404, detail="User not found")
     except Exception as e:
         # Log the error in case of an exception
-        await log_login_attempt(conn, cred.username, success=False, error_message=str(e))
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
         # Close the database connection
@@ -75,22 +72,33 @@ async def signup(cred: UserSignUpCred):
     # Get the database connection
     conn = await open_connection()
     try:
+        
         # Check if user already exists
-        query = "SELECT username FROM users WHERE username = $1"
-        existing_user = await conn.fetchrow(query, cred.username)
+        await conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                DOB VARCHAR(255) NOT NULL
+            );
+            """
+        )
+        
+        query = "SELECT email FROM users WHERE email = $1"
+        existing_user = await conn.fetchrow(query, cred.email)
         if existing_user:
-            raise HTTPException(status_code=400, detail="Username already exists")
+            raise HTTPException(status_code=400, detail="email already exists")
 
         # Hash the password before storing
         hashed_password = bcrypt.hashpw(cred.password.encode('utf-8'), bcrypt.gensalt())
 
         # Insert new user into the database
         query = """
-        INSERT INTO users (id, username, password, email, DOB) 
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO users (password, email, DOB) 
+        VALUES ($1, $2, $3)
         """
-        user_id = str(uuid.uuid4())
-        await conn.execute(query, user_id, get_username(), hashed_password.decode('utf-8'), cred.email, cred.DOB)
+        await conn.execute(query, hashed_password.decode('utf-8'), cred.email, cred.DOB)
 
         return {"message": "User created successfully", "status": True}
     except Exception as e:
@@ -100,30 +108,35 @@ async def signup(cred: UserSignUpCred):
         # Close the database connection
         await close_connection(conn)
 
+# Main route for user profile
 @app.post("/profile/{id}")
-async def profile(id: int, authorization: str = Depends(verify_jwt_token(SECRET_KEY=SECRET_KEY, ALGORITHM=ALGORITHM))):
+async def profile(
+    id: int,
+    user_id: int = Depends(verify_jwt_token),  # Get the user ID from token verification
+):
     # Get the database connection
     conn = await open_connection()
     try:
-        # Query to get user profile by id
+        # Query to get user profile by ID
         query = "SELECT * FROM users WHERE id = $1"
         result = await conn.fetchrow(query, id)
 
         if result:
-            # Ensure the user is authenticated to view this profile
-            if result['username'] != authorization:
-                raise HTTPException(status_code=403, detail="You do not have permission to view this profile")
+            # print(result)
+            # Ensure the user is authorized to view this profile
+            if result['id'] != user_id:
+                raise HTTPException(
+                    status_code=403,
+                    detail="You do not have permission to view this profile",
+                )
             
             return {
                 "id": result['id'],
-                "username": result['username'],
                 "email": result['email'],
-                "DOB": result['DOB'],
-                
+                "DOB": result['dob'],
             }
         else:
             raise HTTPException(status_code=404, detail="User not found")
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
@@ -143,8 +156,8 @@ async def register_node(address: str):
         dict: A message indicating the node was registered successfully and a list of all registered nodes.
     """
     try:
-        blockchain.register_node(address)
-        return {"message": "Node registered successfully", "nodes": list(blockchain.nodes)}
+        RecycleChain.register_node(address)
+        return {"message": "Node registered successfully", "nodes": list(RecycleChain.nodes)}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -159,7 +172,7 @@ async def create_transaction(transaction: TransactionModel):
     Returns:
         dict: A message indicating the transaction will be added to the next block.
     """
-    transaction_index = blockchain.add_transaction(
+    transaction_index = RecycleChain.add_transaction(
         sender=transaction.sender,
         recipient=transaction.recipient,
         ewaste_items=transaction.ewaste_items,
@@ -176,8 +189,8 @@ async def mine_block():
     Returns:
         dict: A message indicating a new block was mined and the details of the new block.
     """
-    last_block = blockchain.last_block
-    proof = blockchain.proof_of_work(last_block['proof'] if last_block else 100)
-    previous_hash = blockchain.hash(last_block) if last_block else "1"
-    block = blockchain.new_block(proof, previous_hash)
+    last_block = RecycleChain.last_block
+    proof = RecycleChain.proof_of_work(last_block['proof'] if last_block else 100)
+    previous_hash = RecycleChain.hash(last_block) if last_block else "1"
+    block = RecycleChain.new_block(proof, previous_hash)
     return {"message": "New block mined", "block": block}
