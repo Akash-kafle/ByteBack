@@ -11,6 +11,7 @@ from backend.models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 # Secret key for JWT (use a more secure method in production)
@@ -18,6 +19,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify allowed origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 @app.get("/")
 async def read_root():
