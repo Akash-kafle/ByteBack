@@ -3,16 +3,17 @@ import Navbar from "./components/Navbar";
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "./components/dashboard";
 import Login from "./components/Login"
+import Dropoff from "./components/Dropoff";
 
 
 const App = () => {
   return (
     <>
-      <div className="flex flex-col min-h-screen w-full bg-gradient-to-r from-purple-100 to-slate-100 ">
+      <div className="">
         <Routes>
           <Route path="/" element={<Dashboard />} />  
           <Route path="/login" element={<Login/>}/>
-          
+          <Route path="/dropoff" element={<Dropoff />} />
         </Routes>
       </div>
     </>
