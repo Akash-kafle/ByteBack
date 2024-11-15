@@ -4,10 +4,11 @@ from pydantic import BaseModel
 
 #signup 
 class UserSignUpCred(BaseModel):
+    # id: str
     name: str
-    username: str
-    password: str
+    # username: str
     email: str
+    password: str
     DOB: str
 
 #login
@@ -17,6 +18,7 @@ class UserLoginCred(BaseModel):
 
 #profile
 class UserProfile(BaseModel):
+    id: str
     name: str
     username: str
     DOB: str
