@@ -16,7 +16,7 @@ const App = () => {
   return (
     <>
       <Navbar />
-      <div className="">
+      <div className="min-h-[100vh]">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/dash" element={<Dashboard />} />
