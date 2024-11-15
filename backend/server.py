@@ -8,6 +8,7 @@ import httpx
 import os
 import jwt
 from backend.models import UserLoginCred, UserSignUpCred, UserLog
+from blockchain.blockchain import RecycleChain, TransactionModel
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
