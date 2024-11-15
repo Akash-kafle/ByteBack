@@ -96,28 +96,78 @@ class RecycleChain:
 
     def _calculate_environmental_impact(self, ewaste_items: List[EWasteItem]) -> Dict:
     # Should consider different impact factors per component type
+        # Impact coefficients per gram (from manufacturing to production phase)
         impact_factors = {
-        'CIRCUIT_BOARDS': 2.5,
-        'BATTERIES': 3.0,
-        'SCREENS': 1.5,
-        'PLASTICS': 0.8,
-        'METALS': 1.2,
-        'HAZARDOUS': 4.0
+            'Aluminum': {'energy': 0.7, 'toxicity': 0.2, 'water': 0.5, 'carbon_emissions': 1.5},
+            'Silicon': {'energy': 0.6, 'toxicity': 0.1, 'water': 0.4, 'carbon_emissions': 1.0},
+            'Oxygen': {'energy': 0.1, 'toxicity': 0.0, 'water': 0.1, 'carbon_emissions': 0.2},
+            'Copper': {'energy': 0.8, 'toxicity': 0.6, 'water': 0.7, 'carbon_emissions': 2.0},
+            'Iron': {'energy': 0.4, 'toxicity': 0.1, 'water': 0.3, 'carbon_emissions': 0.8},
+            'Carbon': {'energy': 0.5, 'toxicity': 0.3, 'water': 0.3, 'carbon_emissions': 1.2},
+            'Nickel': {'energy': 1.0, 'toxicity': 0.9, 'water': 0.8, 'carbon_emissions': 2.5},
+            'Lithium': {'energy': 0.9, 'toxicity': 0.8, 'water': 1.0, 'carbon_emissions': 2.2},
+            'Cobalt': {'energy': 1.2, 'toxicity': 1.0, 'water': 1.1, 'carbon_emissions': 2.8},
+            'Gold': {'energy': 1.5, 'toxicity': 0.5, 'water': 1.2, 'carbon_emissions': 3.0},
+            'Silver': {'energy': 1.3, 'toxicity': 0.6, 'water': 1.1, 'carbon_emissions': 2.6},
+            'Tantalum': {'energy': 1.2, 'toxicity': 0.7, 'water': 0.9, 'carbon_emissions': 2.4},
+            'Tin': {'energy': 0.8, 'toxicity': 0.4, 'water': 0.5, 'carbon_emissions': 1.8},
+            'Neodymium': {'energy': 1.4, 'toxicity': 0.6, 'water': 1.0, 'carbon_emissions': 2.7},
+            'Palladium': {'energy': 1.5, 'toxicity': 0.5, 'water': 1.0, 'carbon_emissions': 2.9},
+            'Platinum': {'energy': 1.5, 'toxicity': 0.6, 'water': 1.1, 'carbon_emissions': 3.1},
+            'Yttrium': {'energy': 1.2, 'toxicity': 0.5, 'water': 0.8, 'carbon_emissions': 2.3},
+            'Indium': {'energy': 1.3, 'toxicity': 0.5, 'water': 0.9, 'carbon_emissions': 2.6},
+            'Gallium': {'energy': 1.1, 'toxicity': 0.4, 'water': 0.8, 'carbon_emissions': 2.0}
         }
     
+        # Initialize total impact dictionary with all metrics
         total_impact = {
-        'carbon_offset': 0,
-        'energy_saved': 0,
-        'landfill_reduced': 0
+            'energy_saved': 0,
+            'toxicity_prevented': 0,
+            'water_preserved': 0,
+            'carbon_emissions_prevented': 0,
+            'total_weight_recycled': 0,
+            'materials_recovered': {}
         }
-    
+
+        # Default impact values for unknown materials
+        default_impact = {
+            'energy': 0.5,
+            'toxicity': 0.3,
+            'water': 0.4,
+            'carbon_emissions': 1.0
+        }
+
         for item in ewaste_items:
+            # Add to total weight
+            total_impact['total_weight_recycled'] += item.weight
+
+            # Calculate impact for each component
             for component in item.components:
-                factor = impact_factors.get(component, 1.0)
-                total_impact['carbon_offset'] += item.weight * factor * 0.5
-                total_impact['energy_saved'] += item.weight * factor * 0.3
-                total_impact['landfill_reduced'] += item.weight
-            
+                # Get impact factors for this component, or use defaults if not found
+                component_factors = impact_factors.get(component, default_impact)
+                
+                # Calculate proportional weight (assuming equal distribution among components)
+                component_weight = item.weight / len(item.components)
+                
+                # Update total impacts
+                total_impact['energy_saved'] += component_weight * component_factors['energy']
+                total_impact['toxicity_prevented'] += component_weight * component_factors['toxicity']
+                total_impact['water_preserved'] += component_weight * component_factors['water']
+                total_impact['carbon_emissions_prevented'] += component_weight * component_factors['carbon_emissions']
+                
+                # Track materials recovered
+                if component in total_impact['materials_recovered']:
+                    total_impact['materials_recovered'][component] += component_weight
+                else:
+                    total_impact['materials_recovered'][component] = component_weight
+
+        # Round all numeric values to 3 decimal places
+        for key, value in total_impact.items():
+            if isinstance(value, (int, float)):
+                total_impact[key] = round(value, 3)
+            elif isinstance(value, dict):
+                total_impact[key] = {k: round(v, 3) for k, v in value.items()}
+
         return total_impact
 
     @property
