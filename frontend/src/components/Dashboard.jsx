@@ -161,7 +161,6 @@ const Dashboard = () => {
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(35%_35%_at_80%_20%,rgba(16,185,129,0.05)_0%,rgba(52,211,153,0)_100%)] pointer-events-none" />
 
       <div className="p-6 max-w-7xl mx-auto">
-        {/* Header with modern styling */}
         <div className="mb-8 bg-white/40 p-6 rounded-2xl backdrop-blur-sm border border-white/20">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 inline-block text-transparent bg-clip-text">
             E-Waste Management Dashboard
@@ -288,14 +287,13 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 ">
           {[
             {
               icon: faMapPin,
               label: "Find Drop-off",
               color: "text-blue-600",
               bg: "bg-blue-100",
-              
             },
             {
               icon: faQrcode,
@@ -318,7 +316,7 @@ const Dashboard = () => {
           ].map((action, index) => (
             <button
               key={index}
-              className="flex items-center justify-center space-x-3 bg-white/60 backdrop-blur-md p-4 rounded-xl border border-white/20 hover:bg-white/80 transition-all duration-300"
+              className="flex items-center justify-center space-x-3 bg-white/60 backdrop-blur-md p-4 rounded-xl border border-white/20 cursor-pointer hover:shadow-lg transition-all duration-300"
             >
               <div className={`${action.bg} p-2 rounded-lg`}>
                 <FontAwesomeIcon
