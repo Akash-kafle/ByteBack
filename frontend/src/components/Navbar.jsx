@@ -46,13 +46,13 @@ const Navbar = () => {
             <FontAwesomeIcon icon={faRecycle} className="mr-2" />
             Drop-offs
           </NavLink>
-          <a
-            href="/about"
+          <NavLink
+            to="/about"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
             <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
             About
-          </a>
+          </NavLink>
           <a
             href="/contact"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
@@ -60,13 +60,13 @@ const Navbar = () => {
             <FontAwesomeIcon icon={faPhone} className="mr-2" />
             Contact
           </a>
-          <a
-            href="/profile"
+          <NavLink
+            to="/profile"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
             <FontAwesomeIcon icon={faUser} className="mr-2" />
             Profile
-          </a>
+          </NavLink>
         </div>
 
         {/* Mobile Menu Button */}
