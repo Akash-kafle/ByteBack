@@ -1,4 +1,12 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFacebook,
+  faGithub,
+  faGoogle,
+} from "@fortawesome/free-brands-svg-icons";
+import { NavLink } from "react-router-dom";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -53,12 +61,10 @@ const Login = () => {
                   onClick={togglePasswordVisibility}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                 >
-                  <i
-                    className={`fas ${
-                      showPassword ? "fa-eye-slash" : "fa-eye"
-                    }`}
-                    aria-hidden="true"
-                  ></i>
+                  <FontAwesomeIcon
+                    icon={showPassword ? faEyeSlash : faEye}
+                    className="text-lg"
+                  />
                 </button>
               </div>
             </div>
@@ -76,14 +82,24 @@ const Login = () => {
             <div className="text-center mt-4">
               <p className="text-sm text-gray-500">Or</p>
               <div className="flex justify-center mt-2">
-                <button className="bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                  <img
-                    src="/Google icon.png"
-                    className="h-[80px] w-[80px] mr-2 inline rounded-full"
-                    alt="Google Icon"
-                  />
-                </button>
+                <FontAwesomeIcon
+                  icon={faGoogle}
+                  className="h-[40px] w-[40px] mr-2 inline hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                />
               </div>
+            </div>
+
+            {/* Signup Link */}
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-500">
+                Don't have an account?{" "}
+                <NavLink
+                  to="/sign-up"
+                  className="text-green-500 hover:text-green-600 font-semibold"
+                >
+                  Sign up
+                </NavLink>
+              </p>
             </div>
           </form>
         </div>
