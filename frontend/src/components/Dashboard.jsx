@@ -156,14 +156,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-      {/* Decorative background elements */}
+     
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(45%_25%_at_50%_50%,rgba(34,197,94,0.05)_0%,rgba(126,231,135,0)_100%)] pointer-events-none" />
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(35%_35%_at_80%_20%,rgba(16,185,129,0.05)_0%,rgba(52,211,153,0)_100%)] pointer-events-none" />
 
       <div className="p-6 max-w-7xl mx-auto">
         <div className="mb-8 bg-white/40 p-6 rounded-2xl backdrop-blur-sm border border-white/20">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 inline-block text-transparent bg-clip-text">
-            E-Waste Management Dashboard
+           Dashboard
           </h1>
           <p className="text-gray-600 mt-2">
             Welcome back! Here's your recycling overview
