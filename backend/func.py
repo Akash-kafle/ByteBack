@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import HTTPException, Request , Header
+from backend.db import open_connection, close_connection
 from datetime import datetime, timedelta
 import jwt
 
@@ -59,3 +60,19 @@ def create_jwt_token(username: str, SECRET_KEY, ALGORITHM):
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token, expiration_time
+
+async def get_username()-> str:
+    conn = await open_connection()
+    try:
+        # Query to get the last inserted username based on ID or insertion timestamp
+        query = "SELECT username FROM users ORDER BY id DESC LIMIT 1"
+        result = await conn.fetchrow(query)
+        if result:
+            return result["username"]
+        return None  # No users in the database
+    except Exception as e:
+        raise Exception(f"Failed to fetch last username: {str(e)}")
+    finally:
+        # Close the database connection
+        await close_connection(conn)
+    

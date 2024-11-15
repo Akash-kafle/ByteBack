@@ -1,9 +1,10 @@
 from typing import Union
 from backend.db import open_connection, close_connection
-from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token
+from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token, get_username
 from blockchain import blockchain
 import bcrypt
 from fastapi import FastAPI, HTTPException, Depends
+import uuid
 import httpx
 import os
 import jwt
@@ -11,6 +12,7 @@ from backend.models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 # Secret key for JWT (use a more secure method in production)
@@ -18,6 +20,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify allowed origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 @app.get("/")
 async def read_root():
@@ -78,12 +89,13 @@ async def signup(cred: UserSignUpCred):
         INSERT INTO users (id, username, password, email, DOB) 
         VALUES ($1, $2, $3, $4, $5)
         """
-        await conn.execute(query,cred.id , cred.username, hashed_password.decode('utf-8'), cred.email, cred.DOB)
+        user_id = str(uuid.uuid4())
+        await conn.execute(query, user_id, get_username(), hashed_password.decode('utf-8'), cred.email, cred.DOB)
 
         return {"message": "User created successfully", "status": True}
-    
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        print(e)
+        return HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
         # Close the database connection
         await close_connection(conn)
