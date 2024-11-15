@@ -37,11 +37,14 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/signup", {
+      data = {
+      // Format date to 'YYYY-MM-DD'
+    }
+      const response = await axios.post("http://127.0.0.1:8000/signup",  {
         username: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
-        DOB: formData.dob ? formData.dob.toISOString().split("T")[0] : null, // Format date to 'YYYY-MM-DD'
         password: formData.password,
+        DOB: formData.dob.toISOString().split("T")[0]
       });
 
       if (response.data.status) {
@@ -137,6 +140,7 @@ const Signup = () => {
               className="w-full px-3 py-2 rounded-lg"
               dateFormat="MM/dd/yyyy"
               placeholderText="MM/DD/YYYY"
+              required
               showYearDropdown
               scrollableYearDropdown
             />
