@@ -6,7 +6,9 @@ from typing import List, Dict, Set
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
-import aiohttp
+from pydantic import BaseModel
+import httpx
+
 
 class EWasteStatus(Enum):
     COLLECTED = "collected"
@@ -23,6 +25,14 @@ class EWasteItem:
     components: List[str]
     manufacturer: str
     year: int
+
+@dataclass
+class TransactionModel(BaseModel):
+    sender: str
+    recipient: str
+    ewaste_items: List[EWasteItem]
+    transaction_type: str
+    status: EWasteStatus
 
 def valid_hash_proof(guess_hash: str) -> bool:
     """Check if hash meets difficulty requirement (4 leading zeros)"""
@@ -218,28 +228,34 @@ class RecycleChain:
             
         return True
 
-    async def resolve_conflicts(self, session: aiohttp.ClientSession) -> bool:
-        """Consensus algorithm: resolve conflicts by replacing chain with longest valid chain"""
+
+    async def resolve_conflicts(self) -> bool:
+        """Consensus algorithm: resolve conflicts by replacing the chain with the longest valid chain."""
         neighbours = self.nodes
         new_chain = None
         max_length = len(self.chain)
         
-        for node in neighbours:
-            async with session.get(f"http://{node}/chain") as response:
-                if response.status == 200:
-                    response_json = await response.json()
-                    length = response_json['length']
-                    chain = response_json['chain']
-                    
-                    if length > max_length and self.valid_chain(chain):
-                        max_length = length
-                        new_chain = chain
+        async with httpx.AsyncClient() as client:
+            for node in neighbours:
+                try:
+                    response = await client.get(f"http://{node}/chain")
+                    if response.status_code == 200:
+                        response_json = response.json()
+                        length = response_json['length']
+                        chain = response_json['chain']
+                        
+                        if length > max_length and self.valid_chain(chain):
+                            max_length = length
+                            new_chain = chain
+                except httpx.RequestError as e:
+                    print(f"Request failed for node {node}: {e}")
         
         if new_chain:
             self.chain = new_chain
             return True
-            
+        
         return False
+
 
     async def mine_block(self, miner_address: str) -> Dict:
         """Mine a new block"""
