@@ -8,6 +8,7 @@ import Recycle from "./components/Recycle";
 import Tracking from "./components/Tracking";
 import Navbar from "./components/Navbar";
 import About from "./components/About";
+
 import Profile from "./components/Profile";
 import Landing from "./components/Landing";
 
@@ -22,6 +23,11 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/sign-up" element={<Signup />} />
           <Route path="/dropoff" element={<Dropoff />} />
+          <Route path="/tracking" element={<Tracking />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="tracking" element={<Tracking />} />
+          <Route path="/about" element={<About />} />
           <Route path="/tracking" element={<Tracking />} />
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
