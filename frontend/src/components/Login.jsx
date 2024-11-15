@@ -8,8 +8,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-      <div className="bg-purple-50 shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4 w-full max-w-md h-[600px] flex flex-col gap-[40px]">
+    <div className="flex h-screen items-center justify-center bg-gradient-to-br from-green-200 to-teal-200">
+      <div className="bg-green-100 shadow-md rounded-2xl px-8 pt-6 pb-8 mb-4 w-full max-w-md h-[600px] flex flex-col gap-[40px]">
         <div>
           <h2 className="text-3xl font-bold mb-6 text-center pt-[50px]">
             Login
@@ -79,7 +79,7 @@ const Login = () => {
                 <button className="bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                   <img
                     src="/Google icon.png"
-                    className="h-[80px] w-[80px] mr-2 inline"
+                    className="h-[80px] w-[80px] mr-2 inline rounded-full"
                     alt="Google Icon"
                   />
                 </button>
