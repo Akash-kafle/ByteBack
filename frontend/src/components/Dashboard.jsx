@@ -1,18 +1,127 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMapPin,
   faQrcode,
   faAward,
   faChartLine,
-  faTruck,
-  faRecycle,
   faChevronUp,
-  faBox,
 } from "@fortawesome/free-solid-svg-icons";
 
+// Drop-off locations data
+const dropoffLocations = [
+  {
+    name: "Doko Recyclers",
+    latitude: 27.6818,
+    longitude: 85.3147,
+    address: "Jhamsikhel, Lalitpur-3",
+    status: "Open",
+  },
+  {
+    name: "Blue Waste to Value",
+    latitude: 27.6785,
+    longitude: 85.3178,
+    address: "Chakupat, Lalitpur",
+    status: "Open",
+  },
+  {
+    name: "Waste Management Resource Mobilization Center",
+    latitude: 27.7041,
+    longitude: 85.3145,
+    address: "Pulchowk, Lalitpur",
+    status: "Open",
+  },
+  {
+    name: "Recycler Sathi",
+    latitude: 27.7149,
+    longitude: 85.3455,
+    address: "Baneshwor, Kathmandu",
+    status: "Open",
+  },
+  {
+    name: "Nepal Pollution Control & Environment Management Center",
+    latitude: 27.6929,
+    longitude: 85.3212,
+    address: "Kupondole, Lalitpur",
+    status: "Open",
+  },
+  {
+    name: "Pragati Recyclers",
+    latitude: 27.7216,
+    longitude: 85.3395,
+    address: "Putalisadak, Kathmandu",
+    status: "Closed",
+  },
+  {
+    name: "Green City Recyclers",
+    latitude: 27.7067,
+    longitude: 85.3476,
+    address: "Thapagaun, Kathmandu",
+    status: "Open",
+  },
+  {
+    name: "Sustainable Recycling Hub",
+    latitude: 27.6751,
+    longitude: 85.3052,
+    address: "Ekantakuna, Lalitpur",
+    status: "Open",
+  },
+];
+
 const Dashboard = () => {
-  // Sample data
+  const [currentPosition, setCurrentPosition] = useState(null);
+  const [nearbyLocations, setNearbyLocations] = useState([]);
+
+  // Calculate distance between two points
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return (R * c).toFixed(2);
+  };
+
+  // Get user's current location and sort nearby locations
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          setCurrentPosition([userLat, userLng]);
+
+          // Sort locations by distance and get top 3
+          const locationsWithDistance = dropoffLocations.map((location) => ({
+            ...location,
+            distance: calculateDistance(
+              userLat,
+              userLng,
+              location.latitude,
+              location.longitude
+            ),
+          }));
+
+          const sorted = locationsWithDistance
+            .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+            .slice(0, 3);
+
+          setNearbyLocations(sorted);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setNearbyLocations(dropoffLocations.slice(0, 3));
+        }
+      );
+    }
+  }, []);
+
+  // Sample stats data
   const stats = [
     { label: "Total Drop-offs", value: "1,234", trend: "+12%" },
     { label: "Eco Points Earned", value: "45.2K", trend: "+8%" },
@@ -20,34 +129,29 @@ const Dashboard = () => {
     { label: "Recycling Rate", value: "78%", trend: "+5%" },
   ];
 
+  // Sample recent drop-offs data
   const recentDropoffs = [
     {
       id: "DR001",
-      location: "EcoCycle Center",
+      location: "Doko Recyclers",
       type: "Electronics",
       points: 150,
       status: "In Transit",
     },
     {
       id: "DR002",
-      location: "GreenTech Hub",
+      location: "Blue Waste to Value",
       type: "Batteries",
       points: 75,
       status: "Collected",
     },
     {
       id: "DR003",
-      location: "RecycleNow",
+      location: "Recycler Sathi",
       type: "Computers",
       points: 200,
       status: "Processing",
     },
-  ];
-
-  const nearbyLocations = [
-    { name: "EcoCycle Center", distance: "0.8 km", status: "Open" },
-    { name: "GreenTech Hub", distance: "1.2 km", status: "Open" },
-    { name: "RecycleNow", distance: "2.5 km", status: "Closed" },
   ];
 
   return (
@@ -164,7 +268,7 @@ const Dashboard = () => {
                         {location.name}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {location.distance}
+                        {location.address} • {location.distance} km
                       </p>
                     </div>
                   </div>
