@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Import CSS for the datepicker
+import { NavLink } from "react-router-dom";
 
 const Signup = () => {
   const [dob, setDob] = useState(null); // State to store the selected date
@@ -106,9 +107,12 @@ const Signup = () => {
           {/* Sign-in Link */}
           <p className="text-sm text-gray-400 text-center mt-4">
             Already have an account?{" "}
-            <a href="#" className="text-cyan-400 hover:underline">
+            <NavLink
+              to="/login"
+              className="text-green-500 hover:text-green-600 font-semibold"
+            >
               Sign in
-            </a>
+            </NavLink>
           </p>
         </form>
       </div>
