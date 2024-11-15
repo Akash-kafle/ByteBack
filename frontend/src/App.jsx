@@ -5,6 +5,7 @@ import Login from "./components/Login"
 import Dropoff from "./components/Dropoff";
 import Signup from "./components/Signup";
 import Tracking from "./components/Tracking";
+import Navbar from "./components/Navbar";
 
 
 const App = () => {
