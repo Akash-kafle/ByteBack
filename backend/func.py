@@ -79,7 +79,6 @@ def create_jwt_token(email: str, SECRET_KEY, ALGORITHM):
         "exp": exp,  # Must be a UTC datetime
         "iat": now,  # Must also be UTC
     }
-    
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token, exp
 
