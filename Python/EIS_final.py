@@ -145,7 +145,7 @@ if __name__ == "__main__":
     
     # Initialize calculator
     calculator = WeightBasedEISCalculator(
-        csv_path="E:\Code\HackFEST\e-waste\Python\smartPhone.csv",
+        csv_path="./smartPhone.csv",
         device_condition=device_condition
     )
     

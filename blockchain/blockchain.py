@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
 from pydantic import BaseModel
+# from blockchain
 import httpx
 
 
@@ -184,6 +185,10 @@ class RecycleChain:
     def last_block(self) -> Dict:
         """Get the last block in the chain"""
         return self.chain[-1] if self.chain else None
+
+    @property
+    def free_amount():
+        """This is """
 
     @staticmethod
     def hash(block: Dict) -> str:
