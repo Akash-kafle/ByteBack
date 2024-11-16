@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -20,9 +21,9 @@ const Footer = () => {
                 </h2>
                 <ul className="text-white font-medium">
                   <li className="mb-4">
-                    <a href="https://flowbite.com/" className="hover:underline">
+                    <NavLink to="/recycle" className="hover:underline">
                       Schedule PickUp
-                    </a>
+                    </NavLink>
                   </li>
                   <li>
                     <a
