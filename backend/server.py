@@ -1,16 +1,26 @@
 from typing import Union
+<<<<<<< HEAD
 from backend.db import open_connection, close_connection
 from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token
 from blockchain.blockchain import RecycleChain
 from pydantic import BaseModel
+=======
+from .db import open_connection, close_connection
+from .func import log_login_attempt, create_jwt_token, verify_jwt_token
+>>>>>>> refs/remotes/origin/main
 import bcrypt
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Response
 import uuid
 import httpx
 import os
 import jwt
+<<<<<<< HEAD
 from backend.models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel, EWasteStatus, EWasteItem
+=======
+from .models import UserLoginCred, UserSignUpCred, UserLog
+from blockchain.blockchain import RecycleChain, TransactionModel
+>>>>>>> refs/remotes/origin/main
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,7 +76,7 @@ async def read_root():
     return {"Hello": "World"}
 
 @app.post("/login")
-async def login(cred: UserLoginCred):
+async def login(cred: UserLoginCred, response: Response):
     # Get the database connection
     conn = await open_connection()
     try:
@@ -81,10 +91,24 @@ async def login(cred: UserLoginCred):
             if bcrypt.checkpw(cred.password.encode('utf-8'), stored_password_hash.encode('utf-8')):
                 # Generate JWT token for the user
                 token, valid_to = create_jwt_token(cred.email, SECRET_KEY=SECRET_KEY, ALGORITHM=ALGORITHM)
+                
+                # Set the token as an HttpOnly cookie in the response
+                response.set_cookie(
+                    key="authToken",
+                    value=token,
+                    httponly=True,
+                    secure=True,  
+                    samesite="Strict",  
+                    max_age=3600,  
+                    expires=valid_to  
+                )
+
                 # Log the successful login attempt
                 await log_login_attempt(conn, cred.email, success=True, token=token)
-                # Send the JWT and user ID to the frontend
-                return {"token": token, "user_id": user_id, "valid_to": valid_to.isoformat()}
+                
+                # Send the user ID and token validity to the frontend
+                return {"user_id": user_id, "valid_to": valid_to.isoformat()}
+
             else:
                 # Log the failed login attempt
                 raise HTTPException(status_code=401, detail="Invalid password")

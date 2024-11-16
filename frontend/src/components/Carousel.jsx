@@ -19,7 +19,7 @@ const CarouselTransition = () => {
   };
 
   return (
-    <div className="relative h-[542px] overflow-hidden">
+    <div className=" h-[542px] overflow-hidden">
       <img
         src={images[currentIndex]}
         alt={`Image ${currentIndex + 1}`}
@@ -38,7 +38,7 @@ const CarouselTransition = () => {
         <FaChevronRight className="w-6 h-6" />
       </button>
       <NavLink to="/login">
-        <button className="absolute bottom-4 right-[700px] text-white px-4 py-2 rounded-md  ">
+        <button className="absolute bottom-[225px] right-[750px] text-white px-4 py-2 rounded-md  ">
           <span className="font-semibold text-xl items-center align-middle hover:underline">
             Get Started {<FaArrowRight className="inline align-middle" />}
           </span>

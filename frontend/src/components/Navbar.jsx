@@ -9,6 +9,8 @@ import {
   faUser,
   faSignOutAlt,
   faGift, // Add the logout icon
+  faBoxOpen, // Icon for Dropoff
+  faTruckPickup, // Icon for Pickup
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 
@@ -17,9 +19,7 @@ const Navbar = () => {
 
   // Function to handle logout
   const handleLogout = () => {
- 
     console.log("Logging out...");
-  
   };
 
   return (
@@ -52,8 +52,15 @@ const Navbar = () => {
             to="/dropoff"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
-            <FontAwesomeIcon icon={faRecycle} className="mr-2" />
-            Drop-offs
+            <FontAwesomeIcon icon={faBoxOpen} className="mr-2" />
+            Dropoff
+          </NavLink>
+          <NavLink
+            to="/recycle"
+            className="text-white text-lg hover:text-teal-200 transition-all duration-300"
+          >
+            <FontAwesomeIcon icon={faTruckPickup} className="mr-2" />
+            Pickup
           </NavLink>
           <NavLink
             to="/about"
@@ -63,7 +70,7 @@ const Navbar = () => {
             About
           </NavLink>
           <NavLink
-            to="/redeem" 
+            to="/redeem"
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
             <FontAwesomeIcon icon={faGift} className="mr-2" />
@@ -83,7 +90,7 @@ const Navbar = () => {
             className="text-white text-lg hover:text-teal-200 transition-all duration-300"
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-            Logout
+           
           </button>
         </div>
 
