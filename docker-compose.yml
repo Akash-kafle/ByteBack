@@ -2,13 +2,19 @@ services:
   db:
     env_file: .env
     image: postgres:${POSTGRES_VERSION:-13}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: USERLOG
+      POSTGRES_DB: UserLog
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASS}
     ports:
-      - "${POSTGRES_PORT:-5431}:5431"
-volumes:
-  postgres_data:
+      - "${POSTGRES_PORT}:5432"
+# volumes:
+#   postgres_data:
+
+# SECRET_KEY=BinaryBananas@!12
+# POSTGRES_USER=monarch
+# POSTGRES_PASS=aakash123
+# POSTGRES_NAME=hackfest
+# POSTGRES_PORT=5431
