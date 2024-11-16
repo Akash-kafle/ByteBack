@@ -39,16 +39,20 @@ async def log_login_attempt(conn, username: str, success: bool, token ,error_mes
     except Exception as e:
         print(f"Failed to log login attempt for '{username}': {e}")
 
-
-# Helper function to verify JWT token and extract user info
-async def verify_jwt_token(authorization: str = Header(...)) -> int:
-    # Ensure the Authorization header exists and starts with "Bearer "
-    if not authorization.startswith("Bearer "):
+async def verify_jwt_token(authorization: str) -> int:
+    # Check if the Authorization header exists
+    if not authorization:
         raise HTTPException(
-            status_code=401, detail="Invalid authorization header format"
+            status_code=401, detail="Authorization header is required"
         )
     
-    # Extract the token
+    # Ensure the Authorization header starts with "Bearer "
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401, detail="Invalid authorization header format. Expected 'Bearer <token>'"
+        )
+    
+    # Extract the token from the header
     token = authorization[len("Bearer "):]
     
     # Connect to the database and check the token
@@ -69,6 +73,7 @@ async def verify_jwt_token(authorization: str = Header(...)) -> int:
         )
     finally:
         await close_connection(conn)
+
 
 # Helper function to generate JWT token
 def create_jwt_token(email: str, SECRET_KEY, ALGORITHM):

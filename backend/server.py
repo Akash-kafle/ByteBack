@@ -88,8 +88,15 @@ async def login(cred: UserLoginCred, response: Response):
                 token, valid_to = create_jwt_token(cred.email, SECRET_KEY=SECRET_KEY, ALGORITHM=ALGORITHM)
                 
                 # Set the token as an HttpOnly cookie in the response
-               
-
+                response.set_cookie(
+                    key="authToken",
+                    value=token,
+                    httponly=True,
+                    secure=True,  
+                    samesite="Strict",  
+                    max_age=3600,  
+                    expires=valid_to  
+                )
 
                 # Log the successful login attempt
                 await log_login_attempt(conn, cred.email, success=True, token=token)
@@ -111,13 +118,6 @@ async def login(cred: UserLoginCred, response: Response):
     finally:
         # Close the database connection
         await close_connection(conn)
-@app.post("/logout")
-def logout(response: Response):
-    """
-    Clears the auth cookie by setting it to an empty value and expiring it immediately.
-    """
-    response.delete_cookie(key="authToken")
-    return {"message": "Logged out successfully"}
 
 @app.post("/signup")
 async def signup(cred: UserSignUpCred):
@@ -161,26 +161,22 @@ async def signup(cred: UserSignUpCred):
         await close_connection(conn)
 
 # Main route for user profile
-@app.post("/profile/{id}")
+@app.post("/profile")
 async def profile(
-    id: int,
-    user_id: int = Depends(verify_jwt_token),  # Get the user ID from token verification
+    token: str,  # Get the user ID from token verification
 ):
+    user_id: int = await verify_jwt_token(token)
+    
     # Get the database connection
     conn = await open_connection()
     try:
         # Query to get user profile by ID
         query = "SELECT * FROM users WHERE id = $1"
-        result = await conn.fetchrow(query, id)
+        result = await conn.fetchrow(query, user_id)
 
         if result:
             # print(result)
             # Ensure the user is authorized to view this profile
-            if result['id'] != user_id:
-                raise HTTPException(
-                    status_code=403,
-                    detail="You do not have permission to view this profile",
-                )
             
             return {
                 "id": result['id'],
@@ -273,7 +269,6 @@ async def create_transaction(transaction: TransactionModel):
     transaction_index = recycle.add_transaction(
         sender=transaction.sender,
         recipient=transaction.recipient,
-        amount=transaction.transactionAmount,
         ewaste_items=transaction.ewaste_items,
         transaction_type=transaction.transaction_type,
         status=transaction.status,
