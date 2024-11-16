@@ -103,7 +103,7 @@ async def login(cred: UserLoginCred, response: Response):
                 await log_login_attempt(conn, cred.email, success=True, token=token)
                 
                 # Send the user ID and token validity to the frontend
-                return {"user_id": user_id, "valid_to": valid_to.isoformat()}
+                return {"token":token,"user_id": user_id, "valid_to": valid_to.isoformat()}
 
             else:
                 # Log the failed login attempt
