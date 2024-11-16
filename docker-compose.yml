@@ -1,0 +1,14 @@
+services:
+  db:
+    env_file: .env
+    image: postgres:${POSTGRES_VERSION:-13}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: USERLOG
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+    ports:
+      - "${POSTGRES_PORT:-5431}:5431"
+volumes:
+  postgres_data:
