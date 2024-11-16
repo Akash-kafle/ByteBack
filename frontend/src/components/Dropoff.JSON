@@ -1,0 +1,23 @@
+[
+  {
+    "id": "DR001",
+    "location": "Doko Recyclers",
+    "type": "Electronics",
+    "points": 150,
+    "status": "In Transit"
+  },
+  {
+    "id": "DR002",
+    "location": "Blue Waste to Value",
+    "type": "Batteries",
+    "points": 75,
+    "status": "Collected"
+  },
+  {
+    "id": "DR003",
+    "location": "Recycler Sathi",
+    "type": "Computers",
+    "points": 200,
+    "status": "Processing"
+  }
+]

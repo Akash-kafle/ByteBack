@@ -26,13 +26,14 @@ const App = () => {
           <Route path="/sign-up" element={<Signup />} />
           <Route path="/dropoff" element={<Dropoff />} />
           <Route path="/tracking" element={<Tracking />} />
+          <Route path="/tracking/:id" element={<Tracking />} />
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/recycle" element={<Recycle />} />
           <Route path="/tracking" element={<Tracking />} />
           <Route path="/redeem" element={<Redeem />} />
-          <Route path="/leaderboards" element={<Leaderboard/>} />
-          <Route path="/admin" element={<Admin/>} />
+          <Route path="/leaderboards" element={<Leaderboard />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
     </>
