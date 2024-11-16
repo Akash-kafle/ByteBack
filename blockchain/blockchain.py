@@ -12,6 +12,7 @@ import httpx
 from datetime import datetime, timedelta
 from typing import Optional
 
+
 class EWasteStatus(Enum):
     COLLECTED = "collected"
     SORTED = "sorted"
@@ -177,6 +178,8 @@ class RecycleChain:
                        transaction_type: str,
                        status: EWasteStatus) -> int:
         """Add a new transaction to the list of transactions"""
+        from Python.EISnumeric import Using
+
         transaction = {
             'sender': sender,
             'recipient': recipient,
@@ -184,7 +187,7 @@ class RecycleChain:
             'type': transaction_type,
             'status': status.value,
             'ewaste_items': [vars(item) for item in ewaste_items],
-            'EIS': WeightBasedEISCalculator.calculate_eis(ewaste_items),
+            'EIS': Using(),
             'reward': self.calculate_rewards(ewaste_items)
         }
         
