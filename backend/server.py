@@ -19,6 +19,8 @@ from .models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from blockchain.blockchain import EWasteStatus
 from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
@@ -32,7 +34,7 @@ recycle = RecycleChain()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify allowed origins
+    allow_origins=["http://localhost:5173"],  # Or specify allowed origins
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
