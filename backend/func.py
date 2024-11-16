@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import HTTPException, Request , Header
-from backend.db import open_connection, close_connection
+from .db import open_connection, close_connection
 from datetime import datetime, timedelta
 import jwt
 from asyncpg import Connection
