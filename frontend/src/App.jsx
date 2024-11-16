@@ -19,24 +19,14 @@ const App = () => {
       <div className="min-h-[100vh]">
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/dash" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/sign-up" element={<Signup />} />
           <Route path="/dropoff" element={<Dropoff />} />
-          <Route path="/tracking" element={<Tracking />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="tracking" element={<Tracking />} />
-          <Route path="/about" element={<About />} />
           <Route path="/tracking" element={<Tracking />} />
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/recycle" element={<Recycle />} />
-          <Route path="/" element={<Dashboard />} />
-          {/* <Route path="/navbar" element={<Navbar />} /> */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/sign-up" element={<Signup />} />
-          <Route path="/dropoff" element={<Dropoff />} />
           <Route path="/tracking" element={<Tracking />} />
           <Route path="/redeem" element={<Redeem />} />
         </Routes>

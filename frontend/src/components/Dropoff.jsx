@@ -223,7 +223,7 @@ const Dropoff = () => {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white p-6 rounded-2xl backdrop-blur-sm border border-white/20 mb-6">
           <div className="flex justify-between items-start">
-            <div>
+            <div className="">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 inline-block text-transparent bg-clip-text">
                 E-Waste Drop-off Locations
               </h1>
