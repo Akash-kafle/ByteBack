@@ -1,26 +1,16 @@
 from typing import Union
-<<<<<<< HEAD
-from backend.db import open_connection, close_connection
-from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token
-from blockchain.blockchain import RecycleChain
-from pydantic import BaseModel
-=======
 from .db import open_connection, close_connection
 from .func import log_login_attempt, create_jwt_token, verify_jwt_token
->>>>>>> refs/remotes/origin/main
 import bcrypt
 from fastapi import FastAPI, HTTPException, Depends, Response
+from blockchain.blockchain import EWasteStatus
+from pydantic import BaseModel
 import uuid
 import httpx
 import os
 import jwt
-<<<<<<< HEAD
-from backend.models import UserLoginCred, UserSignUpCred, UserLog
-from blockchain.blockchain import RecycleChain, TransactionModel, EWasteStatus, EWasteItem
-=======
 from .models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel
->>>>>>> refs/remotes/origin/main
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
