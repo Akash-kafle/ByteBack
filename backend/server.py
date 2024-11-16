@@ -7,6 +7,8 @@ from .db import open_connection, close_connection
 from .func import log_login_attempt, create_jwt_token, verify_jwt_token
 import bcrypt
 from fastapi import FastAPI, HTTPException, Depends, Response
+from blockchain.blockchain import EWasteStatus
+from pydantic import BaseModel
 import uuid
 import httpx
 import os

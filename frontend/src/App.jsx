@@ -11,6 +11,8 @@ import About from "./components/About";
 import Redeem from "./components/redeem";
 import Profile from "./components/Profile";
 import Landing from "./components/Landing";
+import Leaderboard from "./components/Leaderboard";
+import Admin from "./components/Admin";
 
 const App = () => {
   return (
@@ -29,6 +31,8 @@ const App = () => {
           <Route path="/recycle" element={<Recycle />} />
           <Route path="/tracking" element={<Tracking />} />
           <Route path="/redeem" element={<Redeem />} />
+          <Route path="/leaderboards" element={<Leaderboard/>} />
+          <Route path="/admin" element={<Admin/>} />
         </Routes>
       </div>
     </>
