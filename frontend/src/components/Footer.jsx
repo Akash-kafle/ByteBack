@@ -10,7 +10,7 @@ const Footer = () => {
             <div className="mb-6 md:mb-0">
               <a href="https://flowbite.com/" className="flex items-center">
                 <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
-                  e-Waste Recycle
+                  Byte-Back
                 </span>
               </a>
             </div>
@@ -82,7 +82,7 @@ const Footer = () => {
             <span className="text-sm text-white sm:text-center">
               © 2023{" "}
               <a href="https://flowbite.com/" className="hover:underline">
-                E-Waste recycling™
+                Byte-Back™
               </a>
               . All Rights Reserved.
             </span>

@@ -42,9 +42,8 @@ const Navbar = () => {
         <div className="flex items-center space-x-3">
           <div className="text-white text-3xl font-bold">
             <span className="bg-gradient-to-r from-green-400 to-teal-400 text-transparent bg-clip-text">
-              E-Waste
+              Byte-Back
             </span>
-            <span className="text-teal-200">Recycling</span>
           </div>
         </div>
 
