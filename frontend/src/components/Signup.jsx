@@ -4,6 +4,7 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; // Import default styles
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,13 +28,10 @@ const Signup = () => {
     setFormData((prevData) => ({ ...prevData, dob: date }));
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-  const toggleConfirmPasswordVisibility = () => {
+  const toggleConfirmPasswordVisibility = () =>
     setShowConfirmPassword(!showConfirmPassword);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +77,7 @@ const Signup = () => {
     <div className="min-h-screen shadow-md rounded-2xl bg-gradient-to-r from-green-200 to-teal-200">
       <div className="p-6 max-w-7xl mx-auto">
         <form
-          className="flex flex-col gap-6 max-w-sm mx-auto mt-[60px] p-6 rounded-x/60 backdrop-blur-md rounded-2xl bg-green-100"
+          className="flex flex-col gap-6 max-w-sm mx-auto mt-[60px] p-6 rounded-xl backdrop-blur-md bg-green-100"
           onSubmit={handleSubmit}
         >
           <p className="text-2xl font-semibold tracking-tight text-green-500 flex items-center justify-center mb-8">
@@ -97,7 +95,7 @@ const Signup = () => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300"
               type="text"
               required
             />
@@ -109,7 +107,7 @@ const Signup = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300"
               type="email"
               required
             />
@@ -120,12 +118,13 @@ const Signup = () => {
             <DatePicker
               selected={formData.dob}
               onChange={handleDateChange}
-              className="w-full px-3 py-2 rounded-lg"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300"
               dateFormat="MM/dd/yyyy"
               placeholderText="MM/DD/YYYY"
               required
               showYearDropdown
               scrollableYearDropdown
+              yearDropdownItemNumber={100} // Allow scrolling through 100 years
             />
           </div>
 
@@ -136,7 +135,7 @@ const Signup = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg"
+                className="w-full px-3 py-2 rounded-lg border border-gray-300"
                 type={showPassword ? "text" : "password"}
                 required
               />
@@ -160,7 +159,7 @@ const Signup = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg"
+                className="w-full px-3 py-2 rounded-lg border border-gray-300"
                 type={showConfirmPassword ? "text" : "password"}
                 required
               />
@@ -177,7 +176,7 @@ const Signup = () => {
             </div>
           </div>
 
-          <button className="bg-green-500 hover:bg-green-600 focus:outline-none py-3 px-6 rounded-lg border-none transition-all duration-300">
+          <button className="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg">
             Submit
           </button>
 

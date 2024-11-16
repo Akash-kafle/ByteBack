@@ -3,6 +3,8 @@ from fastapi import HTTPException, Request , Header
 from .db import open_connection, close_connection
 from datetime import datetime, timedelta, timezone
 import jwt
+import hashlib
+import json
 from asyncpg import Connection
 
 
@@ -82,3 +84,12 @@ def create_jwt_token(email: str, SECRET_KEY, ALGORITHM):
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token, exp
 
+# def create_wallet(email: str)-> WalletAccount:
+#     wallet = WalletAccount(
+#         address= hashlib.sha256(json.dumps(vars(email), sort_keys=True).encode()).hexdigest(),
+#         balance=0,
+#         transaction_history=[],
+#         rewards_earned=0,
+#         total_ewaste_processed=0
+#     )
+#     return wallet

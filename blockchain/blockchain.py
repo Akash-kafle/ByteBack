@@ -6,10 +6,11 @@ from typing import List, Dict, Set
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
+from Python.EIS_final import WeightBasedEISCalculator 
 from pydantic import BaseModel
-# from blockchain
 import httpx
-
+from datetime import datetime, timedelta
+from typing import Optional
 
 class EWasteStatus(Enum):
     COLLECTED = "collected"
@@ -35,6 +36,90 @@ class TransactionModel(BaseModel):
     transaction_type: str
     status: EWasteStatus
 
+class TokenTransaction:
+    def __init__(self, sender: str, recipient: str, amount: float, timestamp: datetime, transaction_hash: str, memo: Optional[str] = None):
+        self.sender = sender
+        self.recipient = recipient
+        self.amount = amount
+        self.timestamp = timestamp
+        self.transaction_hash = transaction_hash
+        self.memo = memo
+
+class TokenSystem:
+    def __init__(self):
+        self.balances = {}
+        self.token_transactions = []
+        self.account_locks = {}
+
+    def _validate_transfer(self, sender: str, amount: float):
+        """Validate if sender has enough balance and that amount is positive"""
+        if sender not in self.balances:
+            raise ValueError(f"Sender account {sender} does not exist.")
+        if self.balances[sender] < amount:
+            raise ValueError(f"Sender {sender} has insufficient funds.")
+        if amount <= 0:
+            raise ValueError("Transfer amount must be positive.")
+
+    def create_account(self, account: str):
+        """Create an account with zero balance"""
+        self.balances[account] = 0.0
+
+    def _create_transaction_hash(self, sender: str, recipient: str, amount: float, timestamp: datetime) -> str:
+        """Generate a hash for the transaction using the details"""
+        transaction_data = f"{sender}{recipient}{amount}{timestamp}"
+        return hashlib.sha256(transaction_data.encode('utf-8')).hexdigest()
+
+    def _proof_of_work(self, sender: str, amount: float) -> bool:
+        """Simulate mining by requiring proof of work for every transfer"""
+        difficulty = 5  # Increase difficulty to make it harder
+        target = '0' * difficulty  # Target hash must start with '00000'
+        
+        # Try different nonces until we find one that satisfies the difficulty
+        nonce = 0
+        while True:
+            transaction_data = f"{sender}{amount}{nonce}"
+            hash_attempt = hashlib.sha256(transaction_data.encode('utf-8')).hexdigest()
+            if hash_attempt.startswith(target):
+                print(f"Mining successful with nonce {nonce}. Hash: {hash_attempt}")
+                return True
+            nonce += 1
+            time.sleep(0.1)  # Add a delay to simulate mining effort
+
+    def transfer(self, sender: str, recipient: str, amount: float, memo: Optional[str] = None) -> TokenTransaction:
+        """Transfer tokens from sender to recipient with mining complexity"""
+        self._validate_transfer(sender, amount)
+        
+        # Perform proof of work before allowing the transfer
+        if not self._proof_of_work(sender, amount):
+            raise ValueError("Failed proof of work.")
+        
+        # Create recipient account if it doesn't exist
+        if recipient not in self.balances:
+            self.create_account(recipient)
+        
+        # Execute transfer
+        self.balances[sender] -= amount
+        self.balances[recipient] += amount
+        
+        # Lock recipient's account temporarily (e.g., 5 seconds)
+        self.account_locks[recipient] = datetime.now() + timedelta(seconds=5)
+        
+        # Record transaction
+        timestamp = datetime.now()
+        transaction_hash = self._create_transaction_hash(sender, recipient, amount, timestamp)
+        
+        transaction = TokenTransaction(
+            sender=sender,
+            recipient=recipient,
+            amount=amount,
+            timestamp=timestamp,
+            transaction_hash=transaction_hash,
+            memo=memo
+        )
+        self.token_transactions.append(transaction)
+        
+        return transaction
+
 def valid_hash_proof(guess_hash: str) -> bool:
     """Check if hash meets difficulty requirement (4 leading zeros)"""
     return guess_hash[:4] == "0000"
@@ -45,7 +130,6 @@ def valid_proof(last_proof: int, proof: int, last_hash: str) -> bool:
     return valid_hash_proof(hashlib.sha256(guess).hexdigest())
 
 class RecycleChain:
-    holding = []
     def __init__(self):
         self.chain = []
         self.current_transactions = []
@@ -100,97 +184,18 @@ class RecycleChain:
             'type': transaction_type,
             'status': status.value,
             'ewaste_items': [vars(item) for item in ewaste_items],
-            'environmental_impact': self._calculate_environmental_impact(ewaste_items)
+            'EIS': WeightBasedEISCalculator.calculate_eis(ewaste_items),
+            'reward': self.calculate_rewards(ewaste_items)
         }
         
         self.current_transactions.append(transaction)
         return self.last_block['index'] + 1
 
-    def _calculate_environmental_impact(self, ewaste_items: List[EWasteItem]) -> Dict:
-    # Should consider different impact factors per component type
-        # Impact coefficients per gram (from manufacturing to production phase)
-        impact_factors = {
-            'Aluminum': {'energy': 0.7, 'toxicity': 0.2, 'water': 0.5, 'carbon_emissions': 1.5},
-            'Silicon': {'energy': 0.6, 'toxicity': 0.1, 'water': 0.4, 'carbon_emissions': 1.0},
-            'Oxygen': {'energy': 0.1, 'toxicity': 0.0, 'water': 0.1, 'carbon_emissions': 0.2},
-            'Copper': {'energy': 0.8, 'toxicity': 0.6, 'water': 0.7, 'carbon_emissions': 2.0},
-            'Iron': {'energy': 0.4, 'toxicity': 0.1, 'water': 0.3, 'carbon_emissions': 0.8},
-            'Carbon': {'energy': 0.5, 'toxicity': 0.3, 'water': 0.3, 'carbon_emissions': 1.2},
-            'Nickel': {'energy': 1.0, 'toxicity': 0.9, 'water': 0.8, 'carbon_emissions': 2.5},
-            'Lithium': {'energy': 0.9, 'toxicity': 0.8, 'water': 1.0, 'carbon_emissions': 2.2},
-            'Cobalt': {'energy': 1.2, 'toxicity': 1.0, 'water': 1.1, 'carbon_emissions': 2.8},
-            'Gold': {'energy': 1.5, 'toxicity': 0.5, 'water': 1.2, 'carbon_emissions': 3.0},
-            'Silver': {'energy': 1.3, 'toxicity': 0.6, 'water': 1.1, 'carbon_emissions': 2.6},
-            'Tantalum': {'energy': 1.2, 'toxicity': 0.7, 'water': 0.9, 'carbon_emissions': 2.4},
-            'Tin': {'energy': 0.8, 'toxicity': 0.4, 'water': 0.5, 'carbon_emissions': 1.8},
-            'Neodymium': {'energy': 1.4, 'toxicity': 0.6, 'water': 1.0, 'carbon_emissions': 2.7},
-            'Palladium': {'energy': 1.5, 'toxicity': 0.5, 'water': 1.0, 'carbon_emissions': 2.9},
-            'Platinum': {'energy': 1.5, 'toxicity': 0.6, 'water': 1.1, 'carbon_emissions': 3.1},
-            'Yttrium': {'energy': 1.2, 'toxicity': 0.5, 'water': 0.8, 'carbon_emissions': 2.3},
-            'Indium': {'energy': 1.3, 'toxicity': 0.5, 'water': 0.9, 'carbon_emissions': 2.6},
-            'Gallium': {'energy': 1.1, 'toxicity': 0.4, 'water': 0.8, 'carbon_emissions': 2.0}
-        }
     
-        # Initialize total impact dictionary with all metrics
-        total_impact = {
-            'energy_saved': 0,
-            'toxicity_prevented': 0,
-            'water_preserved': 0,
-            'carbon_emissions_prevented': 0,
-            'total_weight_recycled': 0,
-            'materials_recovered': {}
-        }
-
-        # Default impact values for unknown materials
-        default_impact = {
-            'energy': 0.5,
-            'toxicity': 0.3,
-            'water': 0.4,
-            'carbon_emissions': 1.0
-        }
-
-        for item in ewaste_items:
-            # Add to total weight
-            total_impact['total_weight_recycled'] += item.weight
-
-            # Calculate impact for each component
-            for component in item.components:
-                # Get impact factors for this component, or use defaults if not found
-                component_factors = impact_factors.get(component, default_impact)
-                
-                # Calculate proportional weight (assuming equal distribution among components)
-                component_weight = item.weight / len(item.components)
-                
-                # Update total impacts
-                total_impact['energy_saved'] += component_weight * component_factors['energy']
-                total_impact['toxicity_prevented'] += component_weight * component_factors['toxicity']
-                total_impact['water_preserved'] += component_weight * component_factors['water']
-                total_impact['carbon_emissions_prevented'] += component_weight * component_factors['carbon_emissions']
-                
-                # Track materials recovered
-                if component in total_impact['materials_recovered']:
-                    total_impact['materials_recovered'][component] += component_weight
-                else:
-                    total_impact['materials_recovered'][component] = component_weight
-
-        # Round all numeric values to 3 decimal places
-        for key, value in total_impact.items():
-            if isinstance(value, (int, float)):
-                total_impact[key] = round(value, 3)
-            elif isinstance(value, dict):
-                total_impact[key] = {k: round(v, 3) for k, v in value.items()}
-
-        return total_impact
-
     @property
     def last_block(self) -> Dict:
         """Get the last block in the chain"""
         return self.chain[-1] if self.chain else None
-
-    @property
-    def free_amount():
-        """This is for freeing the amount to the user once new EwasteStatus is acheived and completely at last"""
-        pass
 
     @staticmethod
     def hash(block: Dict) -> str:
@@ -294,18 +299,5 @@ class RecycleChain:
                 total_reward += reward_rate * item.weight
         return total_reward
 
-    def get_ewaste_history(self, item_id: str) -> List[Dict]:
-        """Get the complete history of an e-waste item"""
-        history = []
-        for block in self.chain:
-            for transaction in block['transactions']:
-                if transaction.get('ewaste_items'):
-                    for item in transaction['ewaste_items']:
-                        if item['item_id'] == item_id:
-                            history.append({
-                                'timestamp': transaction['timestamp'],
-                                'status': transaction['status'],
-                                'handler': transaction['sender'],
-                                'facility': transaction['recipient']
-                            })
-        return history
+    def transfer_ownership():
+        pass
