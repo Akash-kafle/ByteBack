@@ -183,7 +183,7 @@ class RecycleChain:
     @property
     def last_block(self) -> Dict:
         """Get the last block in the chain"""
-        return self.chain[-1]
+        return self.chain[-1] if self.chain else None
 
     @staticmethod
     def hash(block: Dict) -> str:

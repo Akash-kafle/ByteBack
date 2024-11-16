@@ -1,0 +1,14 @@
+# Use the official PostgreSQL image as the base
+FROM postgres:15
+
+# Set environment variables for default database, user, and password
+ENV POSTGRES_USER=${POSTGRES_USER}
+ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+ENV POSTGRES_DB=${POSTGRES_NAME}
+
+# Copy initialization scripts to Docker's entrypoint directory
+# These scripts will be executed when the container starts
+COPY ./init.sql /docker-entrypoint-initdb.d/
+
+# Expose the PostgreSQL port
+EXPOSE 5432

@@ -1,14 +1,26 @@
 from typing import Union
+<<<<<<< HEAD
+from backend.db import open_connection, close_connection
+from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token
+from blockchain.blockchain import RecycleChain
+from pydantic import BaseModel
+=======
 from .db import open_connection, close_connection
 from .func import log_login_attempt, create_jwt_token, verify_jwt_token
+>>>>>>> refs/remotes/origin/main
 import bcrypt
 from fastapi import FastAPI, HTTPException, Depends, Response
 import uuid
 import httpx
 import os
 import jwt
+<<<<<<< HEAD
+from backend.models import UserLoginCred, UserSignUpCred, UserLog
+from blockchain.blockchain import RecycleChain, TransactionModel, EWasteStatus, EWasteItem
+=======
 from .models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel
+>>>>>>> refs/remotes/origin/main
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,6 +31,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
 
 app = FastAPI()
+recycle = RecycleChain()
 
 # Add CORS middleware
 app.add_middleware(
@@ -28,7 +41,36 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+# Pydantic models for request/response validation
+class NodeRegistration(BaseModel):
+    address: str
 
+class EWasteItemCreate(BaseModel):
+    item_id: str
+    type: str
+    weight: float
+    components: list[str]
+    manufacturer: str
+    year: int
+
+class TransactionCreate(BaseModel):
+    sender: str
+    recipient: str
+    ewaste_items: list[EWasteItemCreate]
+    transaction_type: str
+    status: EWasteStatus
+
+class BlockResponse(BaseModel):
+    index: int
+    timestamp: float
+    transactions: list[dict]
+    proof: int
+    previous_hash: str
+
+
+
+
+# Normal client
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
@@ -39,9 +81,9 @@ async def login(cred: UserLoginCred, response: Response):
     conn = await open_connection()
     try:
         # Query to get user from the database
-        query = "SELECT id, password FROM users WHERE email = $1"
+        query = "SELECT id,password FROM users WHERE email = $1"
         result = await conn.fetchrow(query, cred.email)
-
+        print(result)
         if result:
             # Compare the stored hashed password with the input password
             stored_password_hash = result['password']
@@ -157,20 +199,38 @@ async def profile(
         await close_connection(conn)
 
 
-@app.post("/register_node/")
-async def register_node(address: str):
-    """
-    Register a new node on the blockchain network.
 
-    Args:
-        address (str): The URL or address of the new node to register.
 
-    Returns:
-        dict: A message indicating the node was registered successfully and a list of all registered nodes.
-    """
+
+
+
+
+# #admin
+# @app.post()
+# async def Add_data_for_mining():
+#     pass
+
+# @app.post()
+# async def Provide_environmental_impact():
+#     pass
+
+# @app.post()
+# async def update_lifecycle():
+#     pass
+
+
+#block chain
+
+@app.post("/nodes/register")
+async def register_node(node: NodeRegistration):
+    """Register a new node in the blockchain network"""
     try:
-        RecycleChain.register_node(address)
-        return {"message": "Node registered successfully", "nodes": list(RecycleChain.nodes)}
+        recycle.register_node(node.address)
+        return {
+            "message": "Node registered successfully",
+            "total_nodes": len(recycle.nodes),
+            "nodes": list(recycle.nodes)
+        }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -185,7 +245,7 @@ async def create_transaction(transaction: TransactionModel):
     Returns:
         dict: A message indicating the transaction will be added to the next block.
     """
-    transaction_index = RecycleChain.add_transaction(
+    transaction_index = recycle.add_transaction(
         sender=transaction.sender,
         recipient=transaction.recipient,
         ewaste_items=transaction.ewaste_items,
@@ -194,16 +254,76 @@ async def create_transaction(transaction: TransactionModel):
     )
     return {"message": f"Transaction will be added to block {transaction_index}"}
 
-@app.post("/mine_block/")
-async def mine_block():
-    """
-    Mine a new block and add it to the blockchain.
+# @app.get("/mine")
+async def mine_block(miner_address: str):
+    """Mine a new block"""
+    try:
+        block = await recycle.mine_block(miner_address)
+        return {
+            "message": "New block mined",
+            "block_index": block["index"],
+            "transactions": block["transactions"],
+            "proof": block["proof"],
+            "previous_hash": block["previous_hash"],
+            "timestamp": datetime.fromtimestamp(block["timestamp"]).isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/chain")
+async def get_full_chain():
+    """Get the full blockchain"""
+    return {
+        "chain": recycle.chain,
+        "length": len(recycle.chain)
+    }
 
-    Returns:
-        dict: A message indicating a new block was mined and the details of the new block.
-    """
-    last_block = RecycleChain.last_block
-    proof = RecycleChain.proof_of_work(last_block['proof'] if last_block else 100)
-    previous_hash = RecycleChain.hash(last_block) if last_block else "1"
-    block = RecycleChain.new_block(proof, previous_hash)
-    return {"message": "New block mined", "block": block}
+@app.get("/chain/validate")
+async def validate_chain():
+    """Validate the entire blockchain"""
+    is_valid = recycle.valid_chain(recycle.chain)
+    return {
+        "is_valid": is_valid,
+        "chain_length": len(recycle.chain)
+    }
+
+@app.post("/nodes/resolve")
+async def consensus():
+    """Resolve conflicts between nodes using consensus algorithm"""
+    replaced = await recycle.resolve_conflicts()
+    return {
+        "message": "Chain was replaced" if replaced else "Current chain is authoritative",
+        "chain": recycle.chain
+    }
+
+@app.get("/ewaste/{item_id}/history")
+async def get_item_history(item_id: str):
+    """Get the complete history of an e-waste item"""
+    history = recycle.get_ewaste_history(item_id)
+    if not history:
+        raise HTTPException(status_code=404, detail="E-waste item not found")
+    return {
+        "item_id": item_id,
+        "history": history,
+        "total_transactions": len(history)
+    }
+
+@app.get("/rewards/calculate")
+async def calculate_rewards(items: list[EWasteItemCreate]):
+    """Calculate recycling rewards for e-waste items"""
+    ewaste_items = [
+        EWasteItem(
+            item_id=item.item_id,
+            type=item.type,
+            weight=item.weight,
+            components=item.components,
+            manufacturer=item.manufacturer,
+            year=item.year
+        ) for item in items
+    ]
+    rewards = recycle.calculate_rewards(ewaste_items)
+    return {
+        "total_rewards": rewards,
+        "items_processed": len(items),
+        "calculation_time": datetime.now().isoformat()
+    }
