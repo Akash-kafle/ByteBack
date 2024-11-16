@@ -30,14 +30,14 @@ const Profile = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100">
       {/* Decorative background elements */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(45%_25%_at_50%_50%,rgba(34,197,94,0.05)_0%,rgba(126,231,135,0)_100%)] pointer-events-none" />
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(35%_35%_at_80%_20%,rgba(16,185,129,0.05)_0%,rgba(52,211,153,0)_100%)] pointer-events-none" />
 
       <div className="p-6 max-w-7xl mx-auto">
         {/* Profile Header */}
-        <div className="mb-8 bg-white/40 p-6 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="mb-8 bg-white p-6 rounded-2xl backdrop-blur-sm border border-white/20">
           <div className="flex items-center space-x-4">
             <img
               src={user.profilePicture}
@@ -52,7 +52,7 @@ const Profile = () => {
         </div>
 
         {/* Eco Points */}
-        <div className="mb-8 bg-white/40 p-6 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="mb-8 bg-white p-6 rounded-2xl backdrop-blur-sm border border-white/20">
           <div className="flex items-center space-x-4">
             <div className="bg-green-100 p-4 rounded-xl">
               <FontAwesomeIcon
@@ -70,7 +70,7 @@ const Profile = () => {
         </div>
 
         {/* Transaction History */}
-        <div className="bg-white/40 p-6 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="bg-white p-6 rounded-2xl backdrop-blur-sm border border-white/20">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
             Transaction History
           </h2>
@@ -118,7 +118,7 @@ const Profile = () => {
         </div>
 
         {/* Recycle History */}
-        <div className="bg-white/40 p-6 rounded-2xl backdrop-blur-sm border border-white/20 mt-8">
+        <div className="bg-white p-6 rounded-2xl backdrop-blur-sm border border-white/20 mt-8">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
             Recycle History
           </h2>
