@@ -88,15 +88,8 @@ async def login(cred: UserLoginCred, response: Response):
                 token, valid_to = create_jwt_token(cred.email, SECRET_KEY=SECRET_KEY, ALGORITHM=ALGORITHM)
                 
                 # Set the token as an HttpOnly cookie in the response
-                response.set_cookie(
-                    key="authToken",
-                    value=token,
-                    httponly=True,
-                    secure=True,  
-                    samesite="Strict",  
-                    max_age=3600,  
-                    expires=valid_to  
-                )
+               
+
 
                 # Log the successful login attempt
                 await log_login_attempt(conn, cred.email, success=True, token=token)
@@ -118,6 +111,13 @@ async def login(cred: UserLoginCred, response: Response):
     finally:
         # Close the database connection
         await close_connection(conn)
+@app.post("/logout")
+def logout(response: Response):
+    """
+    Clears the auth cookie by setting it to an empty value and expiring it immediately.
+    """
+    response.delete_cookie(key="authToken")
+    return {"message": "Logged out successfully"}
 
 @app.post("/signup")
 async def signup(cred: UserSignUpCred):

@@ -20,32 +20,38 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(""); 
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/login", 
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, 
-        }
-      );
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   setLoading(true);
+   setError("");
 
-      if (response.status === 200) {
-        alert("Login successful!");
-        navigate("/"); // Redirect to home page
-      }
-    } catch (err) {
-      setError(err.response?.data?.detail || "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+   try {
+     const response = await axios.post(
+       "http://127.0.0.1:8000/login",
+       formData,
+       {
+         headers: {
+           "Content-Type": "application/json",
+         },
+       }
+     );
+     console.log(response);
+     if (response.status === 200) {
+       // Store the token
+       localStorage.setItem("authToken", response.data.token);
+       localStorage.setItem("userId", response.data.user_id);
+       //  // Save the token in localStorage
+       //  localStorage.setItem("authToken", response.data.token);
+
+       alert("Login successful!");
+       navigate("/dashboard"); // Redirect to dashboard
+     }
+   } catch (err) {
+     setError(err.response?.data?.detail || "Login failed. Please try again.");
+   } finally {
+     setLoading(false);
+   }
+ };
 
   return (
     <div className="flex h-screen items-center justify-center bg-gradient-to-br from-green-200 to-teal-200">
