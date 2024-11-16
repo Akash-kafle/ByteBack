@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import HTTPException, Request , Header
 from .db import open_connection, close_connection
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import jwt
 from asyncpg import Connection
 
@@ -69,12 +69,16 @@ async def verify_jwt_token(authorization: str = Header(...)) -> int:
         await close_connection(conn)
 
 # Helper function to generate JWT token
-def create_jwt_token(username: str, SECRET_KEY, ALGORITHM):
-    expiration_time = datetime.utcnow() + timedelta(minutes=10)  # 1 hour validity
+def create_jwt_token(email: str, SECRET_KEY, ALGORITHM):
+     # Use UTC timezone explicitly
+    now = datetime.now(timezone.utc)
+    exp = now + timedelta(hours=1)  # Token expiry time is 1 hour from now
+    
     payload = {
-        "sub": username,
-        "exp": expiration_time
+        "email": email,
+        "exp": exp,  # Must be a UTC datetime
+        "iat": now,  # Must also be UTC
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    return token, expiration_time
+    return token, exp
 

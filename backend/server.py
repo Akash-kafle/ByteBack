@@ -1,12 +1,20 @@
 from typing import Union
+from backend.db import open_connection, close_connection
+from backend.func import log_login_attempt, create_jwt_token, verify_jwt_token
+from blockchain.blockchain import RecycleChain
+from pydantic import BaseModel
 from .db import open_connection, close_connection
 from .func import log_login_attempt, create_jwt_token, verify_jwt_token
 import bcrypt
 from fastapi import FastAPI, HTTPException, Depends, Response
+from blockchain.blockchain import EWasteStatus
+from pydantic import BaseModel
 import uuid
 import httpx
 import os
 import jwt
+from backend.models import UserLoginCred, UserSignUpCred, UserLog
+from blockchain.blockchain import RecycleChain, TransactionModel, EWasteStatus, EWasteItem
 from .models import UserLoginCred, UserSignUpCred, UserLog
 from blockchain.blockchain import RecycleChain, TransactionModel
 from datetime import datetime, timedelta
@@ -244,7 +252,7 @@ async def create_transaction(transaction: TransactionModel):
     )
     return {"message": f"Transaction will be added to block {transaction_index}"}
 
-# @app.get("/mine")
+@app.get("/mine")
 async def mine_block(miner_address: str):
     """Mine a new block"""
     try:

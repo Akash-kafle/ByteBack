@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
 from pydantic import BaseModel
+# from blockchain
 import httpx
 
 
@@ -44,6 +45,7 @@ def valid_proof(last_proof: int, proof: int, last_hash: str) -> bool:
     return valid_hash_proof(hashlib.sha256(guess).hexdigest())
 
 class RecycleChain:
+    holding = []
     def __init__(self):
         self.chain = []
         self.current_transactions = []
@@ -184,6 +186,11 @@ class RecycleChain:
     def last_block(self) -> Dict:
         """Get the last block in the chain"""
         return self.chain[-1] if self.chain else None
+
+    @property
+    def free_amount():
+        """This is for freeing the amount to the user once new EwasteStatus is acheived and completely at last"""
+        pass
 
     @staticmethod
     def hash(block: Dict) -> str:
