@@ -1,39 +1,33 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faCoins, faRecycle } from "@fortawesome/free-solid-svg-icons";
 
+// Dummy user data (replace with actual data from API or context)
+const dummyUser = {
+  name: "John Doe",
+  email: "johndoe@example.com",
+  profilePicture: "https://via.placeholder.com/150",
+  ecoPoints: 1200, // Eco points as crypto coins
+  transactions: [
+    { id: "T001", date: "2024-10-01", points: 200, type: "Earned" },
+    { id: "T002", date: "2024-10-05", points: 150, type: "Earned" },
+    { id: "T003", date: "2024-10-10", points: -50, type: "Redeemed" },
+    { id: "T004", date: "2024-10-15", points: 300, type: "Earned" },
+  ],
+  recycleHistory: [
+    { id: "R001", date: "2024-10-05", item: "Old Mobile Phone", points: 100 },
+    { id: "R002", date: "2024-10-10", item: "Old Laptop", points: 200 },
+    { id: "R003", date: "2024-10-15", item: "Broken Tablet", points: 50 },
+  ],
+};
+
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(dummyUser);
 
   useEffect(() => {
-    
-    const userId = localStorage.getItem("userId"); 
-    const token = localStorage.getItem("authToken");
-    axios
-      .post(
-        `http://127.0.0.1:8000/profile/${userId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then((response) => {
-        setUser(response.data); // Set user data from API
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching user profile:", error);
-        setLoading(false);
-      });
+    // You can replace this with an API call or context to fetch the user data
+    // fetchUserData().then(data => setUser(data));
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div>Error loading profile</div>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100">
@@ -46,7 +40,7 @@ const Profile = () => {
         <div className="mb-8 bg-white p-6 rounded-2xl backdrop-blur-sm border border-white/20">
           <div className="flex items-center space-x-4">
             <img
-              src={user.profilePicture || "https://via.placeholder.com/150"}
+              src={user.profilePicture}
               alt="User Profile"
               className="w-24 h-24 rounded-full border-4 border-white"
             />
